@@ -20,7 +20,13 @@
 					"startAge": 16,
 					"orientation": "vertical",
 					"width": 500,
-					"height": 2000
+					"height": 2000,
+					"modalities": {
+						"friend": "green",
+						"reddit": "silver",
+						"okc": "blue",
+						"tinder": "orange"
+					}
 				},
 				"init": function() {
 					var paper = new Raphael(0, 0, chronology.settings.width, chronology.settings.height);
@@ -81,6 +87,17 @@
 
 					makeTimeline();
 
+					var currentModality = 40;
+
+					for (var legend in chronology.settings.modalities) {
+						console.log(legend);
+						var modColor = chronology.settings.modalities[legend];
+
+						paper.text(50, currentModality, legend).attr({fill: modColor, "font-weight": "bold"})
+
+						currentModality += 20;
+					}
+
 					var dayIncrement = lineHeight / daysSinceStart;
 
 					for (var j = 0; j < chronology.data.length; j++) {
@@ -90,7 +107,6 @@
 
 						var personStart = moment(currentPerson.appxStartDate);
 						var personEnd = currentPerson.appxEndDate === null ? nowMoment : moment(currentPerson.appxEndDate);
-
 
 						var daysSincePerson = personStart.diff(startMoment, 'days');
 
@@ -103,23 +119,25 @@
 
 						var personXOffset = ((j+1) * 12);
 
-						paper.circle(250 + personXOffset, startTickY, 3).attr({fill: "red"});
+						var currentModality = chronology.settings.modalities[currentPerson.modality];
+
+						paper.circle(250 + personXOffset, startTickY, 3).attr({fill: currentModality});
+						paper.text(250 + personXOffset, startTickY - 8, j+1).attr({"font-size": 8});
 
 						if (typeof currentPerson.encounters === 'number' && currentPerson.encounters > 1) {
 							for (var k = 1; k < currentPerson.encounters; k++) {
-								paper.circle(250 + personXOffset, startTickY + ((heightDuration / (currentPerson.encounters - 1)) * k), 1);
+								paper.circle(250 + personXOffset, startTickY + ((heightDuration / (currentPerson.encounters - 1)) * k), 1).attr({"stroke": currentModality});
 							}
 						} else if (typeof currentPerson.encounters === 'object') {
 							for (var m = 0; m < currentPerson.encounters.length; m++) {
 								var plotCustomY = moment(currentPerson.encounters[m]).diff(personStart, 'days') * dayIncrement;
-								paper.circle(250 + personXOffset, startTickY + plotCustomY, 1);
+								paper.circle(250 + personXOffset, startTickY + plotCustomY, 1).attr({"stroke": currentModality});
 							}
 						}
 
-
 						if (currentPerson.relationship) {
 							var relationshipLineX = 250 + personXOffset + 5;
-							drawSeg(chronology.getPoint(relationshipLineX, startTickY), chronology.getPoint(relationshipLineX, startTickY + heightDuration)).attr({stroke: 1});
+							drawSeg(chronology.getPoint(relationshipLineX, startTickY), chronology.getPoint(relationshipLineX, startTickY + heightDuration)).attr({"stroke-width": 1, "stroke": "red"});
 						}
 					}
 				},
@@ -160,6 +178,14 @@
 						"relationship": true
 					},
 					{
+						"appxStartDate": "2012-05-20",
+						"appxEndDate": "2012-05-20",
+						"encounters": 1,
+						"regular": false,
+						"modality": "friend",
+						"relationship": false
+					},
+					{
 						"appxStartDate": "2012-05-26",
 						"appxEndDate": "2013-06-08",
 						"encounters": 50,
@@ -194,7 +220,7 @@
 					{
 						"appxStartDate": "2013-07-14",
 						"appxEndDate": "2015-09-15",
-						"encounters": ["2013-07-14", "2013-07-20", "2013-07-25", "2013-08-08", "2015-05-01"],
+						"encounters": ["2013-07-14", "2013-07-20", "2013-07-25", "2013-08-08", "2013-12-31", "2015-05-01"],
 						"regular": false,
 						"modality": "friend",
 						"relationship": true
