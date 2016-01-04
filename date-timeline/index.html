@@ -16,7 +16,8 @@
 		$(document).ready(function() {
 			var chronology = {
 				"settings": {
-					"startDate": "July 2010",
+					"startDate": "2010-07-01",
+					"startAge": 16,
 					"orientation": "vertical",
 					"width": 500,
 					"height": 2000
@@ -42,12 +43,13 @@
 
 					console.log(nowMoment.diff(startMoment, 'months'));
 
-					var sinceStart = nowMoment.diff(startMoment, 'months');
+					var monthsSinceStart = nowMoment.diff(startMoment, 'months');
 
 
 					function makeTimeline() {
-						var year = 10;
-						var month = 50
+						var year = 50;
+						var month = 10;
+						var startAge = chronology.settings.startAge;
 
 						function drawTick(tickWidth) {
 							var halfTick = tickWidth/2;
@@ -56,12 +58,22 @@
 							drawSeg(tickStart, tickEnd);
 						}
 
-						var monthIncrement = lineHeight / sinceStart;
+						var monthIncrement = lineHeight / monthsSinceStart;
 
-						for (var i = 0; i <= sinceStart; i++) {
-							drawTick(month);
 
-							paper.text(300, tickOffset, "hi")
+						for (var i = 0; i <= monthsSinceStart; i++) {
+							var tick = month;
+
+							var currentMonth = moment(startMoment).add(i, 'months');
+
+							if (currentMonth.month() === 7) {
+								console.log(currentMonth);
+								tick = year;
+								paper.text(230, tickOffset, startAge += 1).attr({'font-size': 18});
+							}
+
+							drawTick(tick);
+							paper.text(200, tickOffset, currentMonth.format('MM YYYY'));
 
 
 							tickOffset += monthIncrement;
@@ -75,9 +87,6 @@
 				"getPoint": function(x, y) {
 					return x + "," + y + ",";   
 				},
-				"makeTimeline": function() {
-
-				}
 			}
 
 			chronology.init();
