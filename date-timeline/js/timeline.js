@@ -215,6 +215,38 @@ $(document).ready(function() {
                 'event': 'Product Designer'
             }
         ],
+        'housingData': [
+            {
+                'appxStartDate': '2010-09-01',
+                'appxEndDate': '2011-06-01',
+                'event': 'New Jersey'
+            },
+            {
+                'appxStartDate': '2011-08-31',
+                'appxEndDate': '2012-05-15',
+                'event': 'Dorm'
+            },
+            {
+                'appxStartDate': '2012-05-15',
+                'appxEndDate': '2012-07-05',
+                'event': 'Bed Stuy'
+            },
+            {
+                'appxStartDate': '2012-07-05',
+                'appxEndDate': '2013-01-01',
+                'event': 'Greenpoint'
+            },
+            {
+                'appxStartDate': '2013-01-01',
+                'appxEndDate': '2013-02-15',
+                'event': 'Bed Stuy'
+            },
+            {
+                'appxStartDate': '2013-02-15',
+                'appxEndDate': null,
+                'event': 'Upper East Side'
+            }
+        ],
         'moodData': {
             '07-2010': 4,
             '08-2010': 4,
