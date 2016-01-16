@@ -95,9 +95,9 @@ $(document).ready(function() {
                         paper.circle(drawMoodScale(chronology.economicData[key]), tickOffset, 2)
                     }
 
-                    if (!!chronology.spendingData[key]) {
+                    /*if (!!chronology.spendingData[key]) {
                         paper.circle(drawMoodScale(chronology.spendingData[key]), tickOffset, 1)
-                    }
+                    }*/
 
 
                     //outputObject.push("'" + key + "'" + ": { 3 }");*/
@@ -128,6 +128,7 @@ $(document).ready(function() {
             for (var j = 0; j < chronology.encounterData.length; j++) {
                 //console.log(chronology.encounterData[j]);
 
+                var encounterStart = 270;
                 var currentPerson = chronology.encounterData[j];
                 var personStart = moment(currentPerson.appxStartDate);
                 var personEnd = currentPerson.appxEndDate === null ? nowMoment : moment(currentPerson.appxEndDate);
@@ -138,24 +139,41 @@ $(document).ready(function() {
                 var personXOffset = ((j+1) * 12);
                 var currentModality = chronology.settings.modalities[currentPerson.modality];
 
-                paper.circle(250 + personXOffset, startTickY, 3).attr({fill: currentModality});
-                paper.text(250 + personXOffset, startTickY - 8, j+1).attr({'font-size': 8});
+                paper.circle(encounterStart + personXOffset, startTickY, 3).attr({fill: currentModality});
+                paper.text(encounterStart + personXOffset, startTickY - 8, j+1).attr({'font-size': 8});
 
                 if (typeof currentPerson.encounters === 'number' && currentPerson.encounters > 1) {
                     for (var k = 1; k < currentPerson.encounters; k++) {
-                        paper.circle(250 + personXOffset, startTickY + ((heightDuration / (currentPerson.encounters - 1)) * k), 1).attr({'stroke': currentModality});
+                        paper.circle(encounterStart + personXOffset, startTickY + ((heightDuration / (currentPerson.encounters - 1)) * k), 1).attr({'stroke': currentModality});
                     }
                 } else if (typeof currentPerson.encounters === 'object') {
                     for (var m = 0; m < currentPerson.encounters.length; m++) {
                         var plotCustomY = moment(currentPerson.encounters[m]).diff(personStart, 'days') * dayIncrement;
-                        paper.circle(250 + personXOffset, startTickY + plotCustomY, 1).attr({'stroke': currentModality});
+                        paper.circle(encounterStart + personXOffset, startTickY + plotCustomY, 1).attr({'stroke': currentModality});
                     }
                 }
 
                 if (currentPerson.relationship) {
-                    var relationshipLineX = 250 + personXOffset + 5;
+                    var relationshipLineX = encounterStart + personXOffset + 5;
                     drawSeg(chronology.getPoint(relationshipLineX, startTickY), chronology.getPoint(relationshipLineX, startTickY + heightDuration)).attr({'stroke-width': 1, 'stroke': 'red'});
                 }
+            }
+
+            // life data
+            for (var l = 0; l < chronology.lifeData.length; l++) {
+                var currentEvent = chronology.lifeData[l];
+                var eventStart = moment(currentEvent.appxStartDate);
+                var eventEnd = currentEvent.appxEndDate === null ? nowMoment : moment(currentEvent.appxEndDate);
+                var daysSinceEvent = eventStart.diff(startMoment, 'days');
+                var eventHeightDuration = eventEnd.diff(eventStart, 'days') * dayIncrement;
+                var eventStartingPosition = (daysSinceEvent * dayIncrement);
+                var eventStartTickY = verticalOffset + eventStartingPosition;
+
+                var thickOfffset = (l % 2 === 0 ? 6 : 0);
+                var eventXOffset = 260 + thickOfffset;
+
+                drawSeg(chronology.getPoint(eventXOffset, eventStartTickY), chronology.getPoint(eventXOffset, eventStartTickY + eventHeightDuration)).attr({'stroke-width': 6, 'stroke': '#ddd'});
+                paper.text(eventXOffset + 10, eventStartTickY + 10, currentEvent.event).attr({'text-anchor': 'start'});
             }
         },
         'getPoint': function(x, y) {
@@ -165,7 +183,37 @@ $(document).ready(function() {
             {
                 'appxStartDate': '2010-09-01',
                 'appxEndDate': '2011-06-01',
-                'event': ''
+                'event': 'Senior Year'
+            },
+            {
+                'appxStartDate': '2011-08-31',
+                'appxEndDate': '2012-05-15',
+                'event': 'Freshman Year'
+            },
+            {
+                'appxStartDate': '2012-05-25',
+                'appxEndDate': '2012-08-05',
+                'event': 'hackNY Fellowship'
+            },
+            {
+                'appxStartDate': '2012-09-01',
+                'appxEndDate': '2013-05-15',
+                'event': 'Sophomore Year'
+            },
+            {
+                'appxStartDate': '2013-03-01',
+                'appxEndDate': '2013-09-01',
+                'event': 'Internship'
+            },
+            {
+                'appxStartDate': '2013-09-01',
+                'appxEndDate': '2015-01-15',
+                'event': 'Junior Product Designer'
+            },
+            {
+                'appxStartDate': '2015-01-15',
+                'appxEndDate': null,
+                'event': 'Product Designer'
             }
         ],
         'moodData': {
