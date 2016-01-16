@@ -51,8 +51,10 @@ $(document).ready(function() {
             }
 
             for (var a = 1; a <= 5; a++) {
-                paper.circle(drawMoodScale(a), verticalOffset, 5);
+                paper.text(drawMoodScale(a), verticalOffset, a);
             }
+
+            var previousCoordinates;
 
             function makeTimeline() {
                 var year = 25;
@@ -73,7 +75,6 @@ $(document).ready(function() {
                     drawTick(tick, tickOffset);
                     paper.text(200, tickOffset, currentMonth.format('MM YYYY'));
 
-                   
                     var key;
                     var monthOffset = currentMonth.month() + 1;
 
@@ -83,23 +84,25 @@ $(document).ready(function() {
                         key = '' + monthOffset + '-' + currentMonth.year();
                     }
 
-                    console.log()
-
                     var currentMood = chronology.moodData[key];
-
-                    paper.circle(drawMoodScale(currentMood), tickOffset, 3)
-
                     console.log(chronology.economicData[key]);
 
-                    if (!!chronology.economicData[key]) {
-                        paper.circle(drawMoodScale(chronology.economicData[key]), tickOffset, 2)
+                    if (i !== 0) {
+                        drawSeg(previousCoordinates, chronology.getPoint(drawMoodScale(currentMood), tickOffset)).attr({'stroke-width': 2});
                     }
+                    previousCoordinates = chronology.getPoint(drawMoodScale(currentMood), tickOffset);
+
+                    function plotMonthlyLine(dataset, pointSize) {
+                        if (!!dataset[key]) {
+                            paper.circle(drawMoodScale(dataset[key]), tickOffset, pointSize)
+                        }
+                    }
+
+                    plotMonthlyLine(chronology.economicData, 2);
 
                     /*if (!!chronology.spendingData[key]) {
                         paper.circle(drawMoodScale(chronology.spendingData[key]), tickOffset, 1)
                     }*/
-
-
                     //outputObject.push("'" + key + "'" + ": { 3 }");*/
 
                     tickOffset += monthIncrement;
@@ -108,12 +111,9 @@ $(document).ready(function() {
 
             makeTimeline();
 
-            /*console.log(outputObject)*/
-
+            // drawing the legend
             var currentModality = 40;
-
             for (var legend in chronology.settings.modalities) {
-                //console.log(legend);
                 var modColor = chronology.settings.modalities[legend];
 
                 paper.text(50, currentModality, legend).attr({fill: modColor, 'font-weight': 'bold'})
@@ -122,7 +122,6 @@ $(document).ready(function() {
             }
 
             var dayIncrement = lineHeight / daysSinceStart;
-
 
             // encounter loops
             for (var j = 0; j < chronology.encounterData.length; j++) {
@@ -170,7 +169,7 @@ $(document).ready(function() {
                 var eventStartTickY = verticalOffset + eventStartingPosition;
 
                 var thickOfffset = (l % 2 === 0 ? 6 : 0);
-                var eventXOffset = 260 + thickOfffset;
+                var eventXOffset = 265 + thickOfffset;
 
                 drawSeg(chronology.getPoint(eventXOffset, eventStartTickY), chronology.getPoint(eventXOffset, eventStartTickY + eventHeightDuration)).attr({'stroke-width': 6, 'stroke': '#ddd'});
                 paper.text(eventXOffset + 10, eventStartTickY + 10, currentEvent.event).attr({'text-anchor': 'start'});
@@ -281,7 +280,7 @@ $(document).ready(function() {
             '08-2015': 4,
             '09-2015': 4,
             '10-2015': 5,
-            '11-2015': 3,
+            '11-2015': 3.5,
             '12-2015': 4,
             '01-2016': 2
         },
